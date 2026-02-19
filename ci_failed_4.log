@@ -1,0 +1,266 @@
+﻿build (3.11)	Test with pytest	∩╗┐2026-02-19T22:16:06.9311784Z ##[group]Run python -m pytest tests/
+build (3.11)	Test with pytest	2026-02-19T22:16:06.9312102Z [36;1mpython -m pytest tests/[0m
+build (3.11)	Test with pytest	2026-02-19T22:16:06.9344285Z shell: /usr/bin/bash -e {0}
+build (3.11)	Test with pytest	2026-02-19T22:16:06.9344627Z env:
+build (3.11)	Test with pytest	2026-02-19T22:16:06.9344862Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+build (3.11)	Test with pytest	2026-02-19T22:16:06.9345247Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+build (3.11)	Test with pytest	2026-02-19T22:16:06.9345550Z ##[endgroup]
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4261717Z ============================= test session starts ==============================
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4262534Z platform linux -- Python 3.11.14, pytest-9.0.2, pluggy-1.6.0
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4263227Z rootdir: /home/runner/work/aria-runtime/aria-runtime
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4263774Z configfile: pyproject.toml
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4264175Z plugins: cov-7.0.0, anyio-4.12.1
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4264870Z collected 164 items
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4265090Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:09.4343458Z tests/test_aria.py E                                                     [  0%]
+build (3.11)	Test with pytest	2026-02-19T22:16:09.7883109Z tests/test_builtin_tools.py ........                                     [  5%]
+build (3.11)	Test with pytest	2026-02-19T22:16:10.2018645Z tests/test_circuit_breaker.py ...........                                [ 12%]
+build (3.11)	Test with pytest	2026-02-19T22:16:10.2305019Z tests/test_core.py ............................                          [ 29%]
+build (3.11)	Test with pytest	2026-02-19T22:16:10.2418368Z tests/test_fsm.py ...........                                            [ 35%]
+build (3.11)	Test with pytest	2026-02-19T22:16:10.3245887Z tests/test_kernel.py .....F...                                           [ 41%]
+build (3.11)	Test with pytest	2026-02-19T22:16:10.3947041Z tests/test_memory.py ............                                        [ 48%]
+build (3.11)	Test with pytest	2026-02-19T22:16:10.4076121Z tests/test_router.py .......                                             [ 53%]
+build (3.11)	Test with pytest	2026-02-19T22:16:11.5245994Z tests/test_sandbox.py ......                                             [ 56%]
+build (3.11)	Test with pytest	2026-02-19T22:16:11.5436050Z tests/test_sandbox_validation.py ..............                          [ 65%]
+build (3.11)	Test with pytest	2026-02-19T22:16:11.5662972Z tests/test_scrubber.py ......................                            [ 78%]
+build (3.11)	Test with pytest	2026-02-19T22:16:11.6178030Z tests/test_security.py ....................                              [ 90%]
+build (3.11)	Test with pytest	2026-02-19T22:16:11.7720589Z tests/test_types.py ...............
+build (3.11)	Test with pytest	2026-02-19T22:16:11.7721268Z ERROR: Coverage failure: total of 60 is less than fail-under=80
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8188763Z                                                                          [100%]
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8189308Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8189529Z ==================================== ERRORS ====================================
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8190240Z ____________________________ ERROR at setup of test ____________________________
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8191086Z file /home/runner/work/aria-runtime/aria-runtime/tests/test_aria.py, line 23
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8191744Z   def test(name: str):
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8192100Z E       fixture 'name' not found
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8194964Z >       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, test_config, tmp_db, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8197833Z >       use 'pytest --fixtures [testpath]' for help on them.
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8198183Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8198439Z /home/runner/work/aria-runtime/aria-runtime/tests/test_aria.py:23
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8199030Z =================================== FAILURES ===================================
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8199719Z ________________ TestKernelIntegration.test_step_limit_enforced ________________
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8200240Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8200559Z self = <tests.test_kernel.TestKernelIntegration object at 0x7f4c8061ef50>
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8201387Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_step_limit_enforced0')
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8202300Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8202487Z     def test_step_limit_enforced(self, tmp_path):
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8203204Z         """Session fails when step limit exceeded."""
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8203626Z     
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8203884Z         cfg = KernelConfig(
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8204232Z             primary_provider="mock",
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8204832Z             max_steps=2,
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8205160Z             max_cost_usd=1.0,
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8205548Z             db_path=str(tmp_path / "lim.db"),
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8205991Z             log_path=str(tmp_path / "lim.jsonl"),
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8206713Z             allowed_permissions=frozenset({ToolPermission.NONE, ToolPermission.FILESYSTEM_READ}),
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8207439Z         )
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8207782Z         storage = SQLiteStorage(str(tmp_path / "lim.db"))
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8208690Z         # Always returns unknown tool call ΓÇö session will loop and hit limit
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8209311Z         tc = make_tool_call("nonexistent_tool_xyz", {})
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8209821Z         provider = MockProvider([tc, tc, tc, tc, tc])
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8210292Z         registry = ToolRegistry(cfg)
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8210661Z >       registry.build()
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8210871Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8211007Z tests/test_kernel.py:110: 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8211420Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8211931Z aria/tools/registry.py:29: in build
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8212374Z     self._register(cls, module_path=_module_path(cls))
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8212896Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8213258Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8213543Z self = <aria.tools.registry.ToolRegistry object at 0x7f4c800e2890>
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8214169Z cls = <class 'aria.tools.builtin.write_file.ToolPlugin'>
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8215093Z module_path = '/home/runner/work/aria-runtime/aria-runtime/aria/tools/builtin/write_file.py'
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8215679Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8215899Z     def _register(self, cls: Any, module_path: str) -> None:
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8216428Z         manifest = getattr(cls, "manifest", None)
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8216905Z         if not isinstance(manifest, ToolManifest):
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8217583Z             raise ManifestValidationError(f"{cls.__name__}.manifest must be a ToolManifest")
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8218303Z         if not callable(getattr(cls, "execute", None)):
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8218990Z             raise ManifestValidationError(f"Tool {manifest.name!r} has no execute() method")
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8219825Z         disallowed = manifest.permissions - self._config.allowed_permissions
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8220400Z         if disallowed:
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8220730Z >           raise PermissionDeniedError(
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8221202Z                 f"Tool {manifest.name!r} requires {disallowed} "
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8221813Z                 f"not in allowed_permissions: {self._config.allowed_permissions}"
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8222361Z             )
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8223831Z E           aria.models.errors.PermissionDeniedError: Tool 'write_file' requires frozenset({<ToolPermission.FILESYSTEM_WRITE: 'fs_write'>}) not in allowed_permissions: frozenset({<ToolPermission.FILESYSTEM_READ: 'fs_read'>, <ToolPermission.NONE: 'none'>})
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8225529Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8225715Z aria/tools/registry.py:64: PermissionDeniedError
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8226253Z ================================ tests coverage ================================
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8226902Z _______________ coverage: platform linux, python 3.11.14-final-0 _______________
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8227362Z 
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8227563Z Name                                          Stmts   Miss  Cover   Missing
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8228157Z ---------------------------------------------------------------------------
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8228774Z aria/__init__.py                                  0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8229595Z aria/cli/__init__.py                              0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8230363Z aria/cli/audit_cmd.py                            69     69     0%   3-96
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8231016Z aria/cli/bootstrap.py                            50     50     0%   3-78
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8231630Z aria/cli/main.py                                 33     33     0%   3-59
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8232235Z aria/cli/run_cmd.py                              49     49     0%   3-79
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8232852Z aria/cli/tools_cmd.py                            28     28     0%   3-39
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8233480Z aria/kernel/__init__.py                           0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8234122Z aria/kernel/context.py                           16      1    94%   37
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8234915Z aria/kernel/fsm.py                               23      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8235810Z aria/kernel/kernel.py                           173     37    79%   106-108, 164, 227, 314-344, 392-415, 445-452, 473-475, 490-494
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8236719Z aria/logging_setup.py                            56     43    23%   21-86, 94-112
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8237405Z aria/memory/__init__.py                           0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8238531Z aria/memory/sqlite.py                           152     30    80%   164-165, 171-173, 183-185, 210-211, 242-243, 277-278, 286-287, 313-314, 344-345, 367-368, 376-377, 388-389, 408-409, 414-415
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8239661Z aria/models/__init__.py                           0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8240290Z aria/models/errors.py                            70      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8240923Z aria/models/providers/__init__.py                 0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8241649Z aria/models/providers/anthropic_provider.py      72     72     0%   9-164
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8242377Z aria/models/providers/base.py                     4      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8243064Z aria/models/providers/circuit_breaker.py         49      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8243815Z aria/models/providers/ollama_provider.py         62     62     0%   8-153
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8244709Z aria/models/router.py                            50      2    96%   71-72
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8245454Z aria/models/types.py                            218     20    91%   90-92, 96-102, 106-112, 142, 269, 271
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8246194Z aria/security/__init__.py                         0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8246860Z aria/security/scrubber.py                        38      2    95%   90, 93
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8247605Z aria/security/secrets.py                         32     21    34%   12, 15-28, 31-36, 40, 48-50
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8248308Z aria/tools/__init__.py                            0      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8248932Z aria/tools/builtin/__init__.py                    3      0   100%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8249594Z aria/tools/builtin/read_file.py                  18     11    39%   41-51
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8250319Z aria/tools/builtin/write_file.py                 19     12    37%   43-54
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8251122Z aria/tools/registry.py                           78     27    65%   32, 34-36, 40-54, 59, 61, 69, 83-85, 103-104
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8252099Z aria/tools/sandbox.py                           113     20    82%   41-42, 63, 65, 68, 71, 74, 76, 79-82, 133-134, 212-214, 220, 224-225
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8252931Z ---------------------------------------------------------------------------
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8253505Z TOTAL                                          1475    589    60%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8254112Z FAIL Required test coverage of 80% not reached. Total coverage: 60.07%
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8254909Z =========================== short test summary info ============================
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8257280Z FAILED tests/test_kernel.py::TestKernelIntegration::test_step_limit_enforced - aria.models.errors.PermissionDeniedError: Tool 'write_file' requires frozenset({<ToolPermission.FILESYSTEM_WRITE: 'fs_write'>}) not in allowed_permissions: frozenset({<ToolPermission.FILESYSTEM_READ: 'fs_read'>, <ToolPermission.NONE: 'none'>})
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8259800Z ERROR tests/test_aria.py::test
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8260279Z ==================== 1 failed, 162 passed, 1 error in 4.25s ====================
+build (3.11)	Test with pytest	2026-02-19T22:16:11.8665709Z ##[error]Process completed with exit code 1.
+build (3.12)	Test with pytest	∩╗┐2026-02-19T22:16:11.6385436Z ##[group]Run python -m pytest tests/
+build (3.12)	Test with pytest	2026-02-19T22:16:11.6385764Z [36;1mpython -m pytest tests/[0m
+build (3.12)	Test with pytest	2026-02-19T22:16:11.6419720Z shell: /usr/bin/bash -e {0}
+build (3.12)	Test with pytest	2026-02-19T22:16:11.6419963Z env:
+build (3.12)	Test with pytest	2026-02-19T22:16:11.6420205Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.12/x64
+build (3.12)	Test with pytest	2026-02-19T22:16:11.6420587Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.12/x64/lib
+build (3.12)	Test with pytest	2026-02-19T22:16:11.6420901Z ##[endgroup]
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2035181Z ============================= test session starts ==============================
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2035826Z platform linux -- Python 3.12.12, pytest-9.0.2, pluggy-1.6.0
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2036330Z rootdir: /home/runner/work/aria-runtime/aria-runtime
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2036746Z configfile: pyproject.toml
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2037046Z plugins: cov-7.0.0, anyio-4.12.1
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2037762Z collected 164 items
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2037923Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:15.2067971Z tests/test_aria.py E                                                     [  0%]
+build (3.12)	Test with pytest	2026-02-19T22:16:15.6002841Z tests/test_builtin_tools.py ........                                     [  5%]
+build (3.12)	Test with pytest	2026-02-19T22:16:16.0155347Z tests/test_circuit_breaker.py ...........                                [ 12%]
+build (3.12)	Test with pytest	2026-02-19T22:16:16.0451630Z tests/test_core.py ............................                          [ 29%]
+build (3.12)	Test with pytest	2026-02-19T22:16:16.0567626Z tests/test_fsm.py ...........                                            [ 35%]
+build (3.12)	Test with pytest	2026-02-19T22:16:16.1497610Z tests/test_kernel.py .....F...                                           [ 41%]
+build (3.12)	Test with pytest	2026-02-19T22:16:16.2214189Z tests/test_memory.py ............                                        [ 48%]
+build (3.12)	Test with pytest	2026-02-19T22:16:16.2328271Z tests/test_router.py .......                                             [ 53%]
+build (3.12)	Test with pytest	2026-02-19T22:16:17.3660322Z tests/test_sandbox.py ......                                             [ 56%]
+build (3.12)	Test with pytest	2026-02-19T22:16:17.3863735Z tests/test_sandbox_validation.py ..............                          [ 65%]
+build (3.12)	Test with pytest	2026-02-19T22:16:17.4086836Z tests/test_scrubber.py ......................                            [ 78%]
+build (3.12)	Test with pytest	2026-02-19T22:16:17.4612558Z tests/test_security.py ....................                              [ 90%]
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6122242Z tests/test_types.py ...............
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6122938Z ERROR: Coverage failure: total of 60 is less than fail-under=80
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6803525Z                                                                          [100%]
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6804076Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6804307Z ==================================== ERRORS ====================================
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6805060Z ____________________________ ERROR at setup of test ____________________________
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6805911Z file /home/runner/work/aria-runtime/aria-runtime/tests/test_aria.py, line 23
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6806626Z   def test(name: str):
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6806986Z E       fixture 'name' not found
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6810041Z >       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, subtests, test_config, tmp_db, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6812833Z >       use 'pytest --fixtures [testpath]' for help on them.
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6813176Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6813428Z /home/runner/work/aria-runtime/aria-runtime/tests/test_aria.py:23
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6813995Z =================================== FAILURES ===================================
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6814618Z ________________ TestKernelIntegration.test_step_limit_enforced ________________
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6815086Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6815480Z self = <tests.test_kernel.TestKernelIntegration object at 0x7fe7abe8fa10>
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6816420Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_step_limit_enforced0')
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6817640Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6817858Z     def test_step_limit_enforced(self, tmp_path):
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6818342Z         """Session fails when step limit exceeded."""
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6818807Z     
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6819059Z         cfg = KernelConfig(
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6819396Z             primary_provider="mock",
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6819755Z             max_steps=2,
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6820067Z             max_cost_usd=1.0,
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6820418Z             db_path=str(tmp_path / "lim.db"),
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6820849Z             log_path=str(tmp_path / "lim.jsonl"),
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6821561Z             allowed_permissions=frozenset({ToolPermission.NONE, ToolPermission.FILESYSTEM_READ}),
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6822239Z         )
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6822562Z         storage = SQLiteStorage(str(tmp_path / "lim.db"))
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6823450Z         # Always returns unknown tool call ΓÇö session will loop and hit limit
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6824048Z         tc = make_tool_call("nonexistent_tool_xyz", {})
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6824773Z         provider = MockProvider([tc, tc, tc, tc, tc])
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6825217Z         registry = ToolRegistry(cfg)
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6825581Z >       registry.build()
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6825795Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6825922Z tests/test_kernel.py:110: 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6826323Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6826815Z aria/tools/registry.py:29: in build
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6827422Z     self._register(cls, module_path=_module_path(cls))
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6827932Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6828296Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6828582Z self = <aria.tools.registry.ToolRegistry object at 0x7fe7abbdeb70>
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6829188Z cls = <class 'aria.tools.builtin.write_file.ToolPlugin'>
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6829921Z module_path = '/home/runner/work/aria-runtime/aria-runtime/aria/tools/builtin/write_file.py'
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6830482Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6830715Z     def _register(self, cls: Any, module_path: str) -> None:
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6831213Z         manifest = getattr(cls, "manifest", None)
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6831662Z         if not isinstance(manifest, ToolManifest):
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6832323Z             raise ManifestValidationError(f"{cls.__name__}.manifest must be a ToolManifest")
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6833012Z         if not callable(getattr(cls, "execute", None)):
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6833686Z             raise ManifestValidationError(f"Tool {manifest.name!r} has no execute() method")
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6834502Z         disallowed = manifest.permissions - self._config.allowed_permissions
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6835075Z         if disallowed:
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6835391Z >           raise PermissionDeniedError(
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6835849Z                 f"Tool {manifest.name!r} requires {disallowed} "
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6836453Z                 f"not in allowed_permissions: {self._config.allowed_permissions}"
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6836976Z             )
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6838528Z E           aria.models.errors.PermissionDeniedError: Tool 'write_file' requires frozenset({<ToolPermission.FILESYSTEM_WRITE: 'fs_write'>}) not in allowed_permissions: frozenset({<ToolPermission.NONE: 'none'>, <ToolPermission.FILESYSTEM_READ: 'fs_read'>})
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6839985Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6840170Z aria/tools/registry.py:64: PermissionDeniedError
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6840676Z ================================ tests coverage ================================
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6841288Z _______________ coverage: platform linux, python 3.12.12-final-0 _______________
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6841719Z 
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6841909Z Name                                          Stmts   Miss  Cover   Missing
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6842466Z ---------------------------------------------------------------------------
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6843034Z aria/__init__.py                                  0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6843869Z aria/cli/__init__.py                              0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6844455Z aria/cli/audit_cmd.py                            69     69     0%   3-96
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6845079Z aria/cli/bootstrap.py                            50     50     0%   3-78
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6845663Z aria/cli/main.py                                 33     33     0%   3-59
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6846222Z aria/cli/run_cmd.py                              49     49     0%   3-79
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6846789Z aria/cli/tools_cmd.py                            28     28     0%   3-39
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6847580Z aria/kernel/__init__.py                           0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6848163Z aria/kernel/context.py                           16      1    94%   37
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6848802Z aria/kernel/fsm.py                               23      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6849591Z aria/kernel/kernel.py                           173     37    79%   106-108, 164, 227, 314-344, 392-415, 445-452, 473-475, 490-494
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6850412Z aria/logging_setup.py                            56     43    23%   21-86, 94-112
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6851197Z aria/memory/__init__.py                           0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6852235Z aria/memory/sqlite.py                           152     30    80%   164-165, 171-173, 183-185, 210-211, 242-243, 277-278, 286-287, 313-314, 344-345, 367-368, 376-377, 388-389, 408-409, 414-415
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6853286Z aria/models/__init__.py                           0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6853862Z aria/models/errors.py                            70      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6854445Z aria/models/providers/__init__.py                 0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6855124Z aria/models/providers/anthropic_provider.py      72     72     0%   9-164
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6855799Z aria/models/providers/base.py                     4      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6856399Z aria/models/providers/circuit_breaker.py         49      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6857094Z aria/models/providers/ollama_provider.py         62     62     0%   8-153
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6857977Z aria/models/router.py                            50      2    96%   71-72
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6858698Z aria/models/types.py                            218     20    91%   90-92, 96-102, 106-112, 142, 269, 271
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6859405Z aria/security/__init__.py                         0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6860039Z aria/security/scrubber.py                        38      2    95%   90, 93
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6860841Z aria/security/secrets.py                         32     21    34%   12, 15-28, 31-36, 40, 48-50
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6861524Z aria/tools/__init__.py                            0      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6862125Z aria/tools/builtin/__init__.py                    3      0   100%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6862762Z aria/tools/builtin/read_file.py                  18     11    39%   41-51
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6863462Z aria/tools/builtin/write_file.py                 19     12    37%   43-54
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6864259Z aria/tools/registry.py                           78     27    65%   32, 34-36, 40-54, 59, 61, 69, 83-85, 103-104
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6865157Z aria/tools/sandbox.py                           113     20    82%   41-42, 63, 65, 68, 71, 74, 76, 79-82, 133-134, 212-214, 220, 224-225
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6865962Z ---------------------------------------------------------------------------
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6866520Z TOTAL                                          1475    589    60%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6867304Z FAIL Required test coverage of 80% not reached. Total coverage: 60.07%
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6867948Z =========================== short test summary info ============================
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6870209Z FAILED tests/test_kernel.py::TestKernelIntegration::test_step_limit_enforced - aria.models.errors.PermissionDeniedError: Tool 'write_file' requires frozenset({<ToolPermission.FILESYSTEM_WRITE: 'fs_write'>}) not in allowed_permissions: frozenset({<ToolPermission.NONE: 'none'>, <ToolPermission.FILESYSTEM_READ: 'fs_read'>})
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6872452Z ERROR tests/test_aria.py::test
+build (3.12)	Test with pytest	2026-02-19T22:16:17.6872909Z ==================== 1 failed, 162 passed, 1 error in 4.44s ====================
+build (3.12)	Test with pytest	2026-02-19T22:16:17.7375170Z ##[error]Process completed with exit code 1.

@@ -3,6 +3,16 @@
 from __future__ import annotations
 
 import pytest
+import inspect
+
+# Monkey-patch inspect for compatibility with older dependencies on Python 3.11+
+if not hasattr(inspect, "getargspec"):
+    inspect.getargspec = inspect.getfullargspec
+if not hasattr(inspect, "getargs"):
+    # some older libs like parsimonious use inspect.getargs
+    def getargs(co):
+        return co.co_varnames[:co.co_argcount]
+    inspect.getargs = getargs
 
 from aria.memory.sqlite import SQLiteStorage
 from aria.models.types import (
