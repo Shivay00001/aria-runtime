@@ -1,9 +1,16 @@
 """Security tests: path traversal, injection, permission boundaries, audit tampering."""
+
 from __future__ import annotations
-import pytest
+
 from pathlib import Path
-from aria.models.errors import (PathTraversalError, PermissionDeniedError,
-                                   ToolInputValidationError, UnknownToolError)
+
+import pytest
+
+from aria.models.errors import (
+    PathTraversalError,
+    ToolInputValidationError,
+    UnknownToolError,
+)
 from aria.models.types import ToolManifest, ToolPermission
 from aria.tools.sandbox import validate_input, validate_paths
 
@@ -12,12 +19,13 @@ from aria.tools.sandbox import validate_input, validate_paths
 class TestPathTraversalPrevention:
     def _manifest(self, tmp_path):
         return ToolManifest(
-            name="f_tool", version="1.0.0",
+            name="f_tool",
+            version="1.0.0",
             description="A file tool for testing path validation here.",
             permissions=frozenset({ToolPermission.FILESYSTEM_READ}),
             timeout_seconds=10,
-            input_schema={"type":"object","properties":{}},
-            output_schema={"type":"object","properties":{}},
+            input_schema={"type": "object", "properties": {}},
+            output_schema={"type": "object", "properties": {}},
             allowed_paths=(str(tmp_path),),
         )
 
@@ -47,12 +55,13 @@ class TestPathTraversalPrevention:
 
     def test_no_allowed_paths_skips_check(self):
         m = ToolManifest(
-            name="c_tool", version="1.0.0",
+            name="c_tool",
+            version="1.0.0",
             description="A compute tool with no filesystem access needed.",
             permissions=frozenset({ToolPermission.NONE}),
             timeout_seconds=5,
-            input_schema={"type":"object","properties":{}},
-            output_schema={"type":"object","properties":{}},
+            input_schema={"type": "object", "properties": {}},
+            output_schema={"type": "object", "properties": {}},
         )
         # No-op: no FS permissions = no path check
         validate_paths({"path": "/etc/passwd"}, m)
@@ -69,12 +78,13 @@ class TestPathTraversalPrevention:
         sibling = tmp_path / "secret"
         sibling.mkdir()
         m = ToolManifest(
-            name="f_tool", version="1.0.0",
+            name="f_tool",
+            version="1.0.0",
             description="A file tool for testing path validation here.",
             permissions=frozenset({ToolPermission.FILESYSTEM_READ}),
             timeout_seconds=10,
-            input_schema={"type":"object","properties":{}},
-            output_schema={"type":"object","properties":{}},
+            input_schema={"type": "object", "properties": {}},
+            output_schema={"type": "object", "properties": {}},
             allowed_paths=(str(allowed),),
         )
         with pytest.raises(PathTraversalError):
@@ -85,14 +95,18 @@ class TestPathTraversalPrevention:
 class TestInputValidation:
     def _manifest(self):
         return ToolManifest(
-            name="t_tool", version="1.0.0",
+            name="t_tool",
+            version="1.0.0",
             description="A test tool for input validation testing purposes.",
             permissions=frozenset({ToolPermission.NONE}),
             timeout_seconds=5,
-            input_schema={"type":"object",
-                           "properties":{"value":{"type":"string"}},
-                           "required":["value"],"additionalProperties":False},
-            output_schema={"type":"object","properties":{}},
+            input_schema={
+                "type": "object",
+                "properties": {"value": {"type": "string"}},
+                "required": ["value"],
+                "additionalProperties": False,
+            },
+            output_schema={"type": "object", "properties": {}},
         )
 
     def test_valid_input_passes(self):
@@ -121,13 +135,13 @@ class TestPermissionBoundaries:
 
     def test_unknown_tool_raises(self, test_config):
         from aria.tools.registry import ToolRegistry
+
         reg = ToolRegistry(test_config)
         reg.build()
         with pytest.raises(UnknownToolError):
             reg.get_manifest("nonexistent_xyz_tool")
 
     def test_shell_tool_rejected_at_registry_load(self, test_config):
-        from aria.tools.registry import ToolRegistry
         # Kernel config doesn't allow SHELL — a shell tool should be rejected
         assert ToolPermission.SHELL not in test_config.allowed_permissions
 
@@ -136,24 +150,38 @@ class TestPermissionBoundaries:
 class TestAuditChainIntegrity:
     def test_intact_chain_verified(self, tmp_db):
         from aria.models.types import AuditEvent, LogLevel
+
         sid = "chain-test"
         for i in range(5):
-            tmp_db.write_event(AuditEvent(session_id=sid, event_type=f"e{i}",
-                                           level=LogLevel.INFO, payload={"i": i}))
+            tmp_db.write_event(
+                AuditEvent(
+                    session_id=sid, event_type=f"e{i}", level=LogLevel.INFO, payload={"i": i}
+                )
+            )
         assert tmp_db.verify_chain(sid)
 
     def test_tampered_record_breaks_chain(self, tmp_db):
         import json
+
         from aria.models.types import AuditEvent, LogLevel
+
         sid = "tamper-test"
-        tmp_db.write_event(AuditEvent(session_id=sid, event_type="e1",
-                                       level=LogLevel.INFO, payload={"data": "original"}))
-        tmp_db.write_event(AuditEvent(session_id=sid, event_type="e2",
-                                       level=LogLevel.INFO, payload={"data": "second"}))
+        tmp_db.write_event(
+            AuditEvent(
+                session_id=sid, event_type="e1", level=LogLevel.INFO, payload={"data": "original"}
+            )
+        )
+        tmp_db.write_event(
+            AuditEvent(
+                session_id=sid, event_type="e2", level=LogLevel.INFO, payload={"data": "second"}
+            )
+        )
         # Direct DB tampering
         conn = tmp_db._conn
-        conn.execute("UPDATE audit_events SET payload_json=? WHERE event_type=?",
-                      (json.dumps({"data": "tampered"}), "e1"))
+        conn.execute(
+            "UPDATE audit_events SET payload_json=? WHERE event_type=?",
+            (json.dumps({"data": "tampered"}), "e1"),
+        )
         conn.commit()
         assert not tmp_db.verify_chain(sid)
 
@@ -162,9 +190,16 @@ class TestAuditChainIntegrity:
 
     def test_multi_session_chains_independent(self, tmp_db):
         from aria.models.types import AuditEvent, LogLevel
+
         for sid in ["s1", "s2", "s3"]:
             for i in range(3):
-                tmp_db.write_event(AuditEvent(session_id=sid, event_type=f"e{i}",
-                                               level=LogLevel.INFO, payload={"sid": sid, "i": i}))
+                tmp_db.write_event(
+                    AuditEvent(
+                        session_id=sid,
+                        event_type=f"e{i}",
+                        level=LogLevel.INFO,
+                        payload={"sid": sid, "i": i},
+                    )
+                )
         for sid in ["s1", "s2", "s3"]:
             assert tmp_db.verify_chain(sid)

@@ -1,7 +1,11 @@
 """Unit tests: circuit breaker state machine."""
+
 from __future__ import annotations
+
 import time
+
 import pytest
+
 from aria.models.errors import CircuitBreakerOpenError
 from aria.models.providers.circuit_breaker import CBState, CircuitBreaker
 
@@ -15,7 +19,8 @@ class TestCircuitBreaker:
 
     def test_trips_after_threshold(self):
         cb = CircuitBreaker("t", failure_threshold=3)
-        for _ in range(3): cb.record_failure()
+        for _ in range(3):
+            cb.record_failure()
         assert cb.state == CBState.OPEN
 
     def test_rejects_when_open(self):
@@ -26,7 +31,8 @@ class TestCircuitBreaker:
 
     def test_success_resets_failures(self):
         cb = CircuitBreaker("t", failure_threshold=3)
-        cb.record_failure(); cb.record_failure()
+        cb.record_failure()
+        cb.record_failure()
         cb.record_success()
         assert cb.state == CBState.CLOSED
 
@@ -38,14 +44,16 @@ class TestCircuitBreaker:
 
     def test_half_open_success_closes(self):
         cb = CircuitBreaker("t", failure_threshold=1, recovery_seconds=0.05)
-        cb.record_failure(); time.sleep(0.1)
+        cb.record_failure()
+        time.sleep(0.1)
         _ = cb.state  # trigger half_open
         cb.record_success()
         assert cb.state == CBState.CLOSED
 
     def test_half_open_failure_reopens(self):
         cb = CircuitBreaker("t", failure_threshold=1, recovery_seconds=0.05)
-        cb.record_failure(); time.sleep(0.1)
+        cb.record_failure()
+        time.sleep(0.1)
         _ = cb.state  # trigger half_open
         cb.record_failure()
         assert cb.state == CBState.OPEN
@@ -66,7 +74,8 @@ class TestCircuitBreaker:
 
     def test_failures_outside_window_expire(self):
         cb = CircuitBreaker("t", failure_threshold=3, window_seconds=0.05)
-        cb.record_failure(); cb.record_failure()
+        cb.record_failure()
+        cb.record_failure()
         time.sleep(0.1)  # window expires
         cb.record_failure()
         assert cb.state == CBState.CLOSED  # only 1 in window

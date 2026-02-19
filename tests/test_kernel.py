@@ -1,12 +1,14 @@
 """Integration tests: full kernel execution with real SQLite + mock provider."""
+
 from __future__ import annotations
-import json
+
 import pytest
+
 from aria.kernel.kernel import AgentKernel
 from aria.memory.sqlite import SQLiteStorage
 from aria.models.errors import ModelProviderExhaustedError
 from aria.models.router import ModelRouter
-from aria.models.types import (KernelConfig, SessionRequest, SessionStatus, ToolPermission)
+from aria.models.types import KernelConfig, SessionRequest, SessionStatus, ToolPermission
 from aria.tools.registry import ToolRegistry
 from tests.conftest import MockProvider, make_final_answer, make_tool_call
 
@@ -14,13 +16,15 @@ from tests.conftest import MockProvider, make_final_answer, make_tool_call
 def _build(config: KernelConfig, storage: SQLiteStorage, provider: MockProvider):
     """Wire up a kernel with mock provider."""
     import dataclasses
+
     # Override primary_provider to "mock"
     cfg2 = KernelConfig(**{**dataclasses.asdict(config), "primary_provider": "mock"})
     registry = ToolRegistry(cfg2)
     registry.build()
     router = ModelRouter(providers={"mock": provider}, audit_writer=storage)
-    return AgentKernel(model_router=router, tool_registry=registry,
-                       memory=storage, audit=storage, config=cfg2)
+    return AgentKernel(
+        model_router=router, tool_registry=registry, memory=storage, audit=storage, config=cfg2
+    )
 
 
 @pytest.fixture
@@ -33,12 +37,17 @@ def storage(tmp_path):
 @pytest.fixture
 def config(tmp_path):
     return KernelConfig(
-        max_steps=5, max_cost_usd=1.0,
+        max_steps=5,
+        max_cost_usd=1.0,
         db_path=str(tmp_path / "int.db"),
         log_path=str(tmp_path / "int.jsonl"),
-        allowed_permissions=frozenset({
-            ToolPermission.NONE, ToolPermission.FILESYSTEM_READ, ToolPermission.FILESYSTEM_WRITE,
-        }),
+        allowed_permissions=frozenset(
+            {
+                ToolPermission.NONE,
+                ToolPermission.FILESYSTEM_READ,
+                ToolPermission.FILESYSTEM_WRITE,
+            }
+        ),
     )
 
 
@@ -84,13 +93,14 @@ class TestKernelIntegration:
 
     def test_step_limit_enforced(self, tmp_path):
         """Session fails when step limit exceeded."""
-        import dataclasses
+
         cfg = KernelConfig(
-            primary_provider="mock", max_steps=2, max_cost_usd=1.0,
+            primary_provider="mock",
+            max_steps=2,
+            max_cost_usd=1.0,
             db_path=str(tmp_path / "lim.db"),
             log_path=str(tmp_path / "lim.jsonl"),
-            allowed_permissions=frozenset({ToolPermission.NONE,
-                                            ToolPermission.FILESYSTEM_READ}),
+            allowed_permissions=frozenset({ToolPermission.NONE, ToolPermission.FILESYSTEM_READ}),
         )
         storage = SQLiteStorage(str(tmp_path / "lim.db"))
         # Always returns unknown tool call — session will loop and hit limit
@@ -109,10 +119,12 @@ class TestKernelIntegration:
     def test_provider_failure_results_in_failed_status(self, config, storage):
         """Provider exhaustion is caught and results in FAILED session."""
         from unittest.mock import MagicMock
+
         provider = MagicMock()
         provider.name = "mock"
         provider.call.side_effect = ModelProviderExhaustedError("All retries", attempts=3)
         import dataclasses
+
         cfg2 = KernelConfig(**{**dataclasses.asdict(config), "primary_provider": "mock"})
         registry = ToolRegistry(cfg2)
         registry.build()
@@ -131,16 +143,19 @@ class TestKernelIntegration:
 
     def test_conversation_history_passed_to_model(self, config, storage):
         """Second model call receives full conversation including tool result."""
-        provider = MockProvider([
-            make_tool_call("nonexistent_tool", {"x": 1}),
-            make_final_answer("Saw tool result"),
-        ])
+        provider = MockProvider(
+            [
+                make_tool_call("nonexistent_tool", {"x": 1}),
+                make_final_answer("Saw tool result"),
+            ]
+        )
         import dataclasses
+
         cfg2 = KernelConfig(**{**dataclasses.asdict(config), "primary_provider": "mock"})
         registry = ToolRegistry(cfg2)
         registry.build()
         router = ModelRouter(providers={"mock": provider}, audit_writer=storage)
         kernel = AgentKernel(router, registry, storage, storage, cfg2)
-        result = kernel.run(SessionRequest(task="Multi-step"))
+        kernel.run(SessionRequest(task="Multi-step"))
         # Should have made 2 provider calls (tool call + final answer)
         assert len(provider.calls) >= 1

@@ -1,18 +1,24 @@
 """aria/kernel/fsm.py — Session finite state machine."""
+
 from __future__ import annotations
+
 from aria.models.errors import InvalidStateTransitionError
 from aria.models.types import SessionStatus
 
 _VALID: dict[SessionStatus, set[SessionStatus]] = {
-    SessionStatus.IDLE:      {SessionStatus.RUNNING, SessionStatus.CANCELLED},
-    SessionStatus.RUNNING:   {SessionStatus.WAITING, SessionStatus.DONE,
-                              SessionStatus.FAILED, SessionStatus.CANCELLED},
-    SessionStatus.WAITING:   {SessionStatus.RUNNING, SessionStatus.FAILED,
-                              SessionStatus.CANCELLED},
-    SessionStatus.DONE:      set(),
-    SessionStatus.FAILED:    set(),
+    SessionStatus.IDLE: {SessionStatus.RUNNING, SessionStatus.CANCELLED},
+    SessionStatus.RUNNING: {
+        SessionStatus.WAITING,
+        SessionStatus.DONE,
+        SessionStatus.FAILED,
+        SessionStatus.CANCELLED,
+    },
+    SessionStatus.WAITING: {SessionStatus.RUNNING, SessionStatus.FAILED, SessionStatus.CANCELLED},
+    SessionStatus.DONE: set(),
+    SessionStatus.FAILED: set(),
     SessionStatus.CANCELLED: set(),
 }
+
 
 class SessionFSM:
     def __init__(self, session_id: str) -> None:

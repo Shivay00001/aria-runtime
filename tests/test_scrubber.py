@@ -1,5 +1,5 @@
 """Secrets scrubber and injection scanner tests."""
-import pytest
+
 from aria.security.scrubber import scan_for_injection, scrub_record, scrub_value
 
 

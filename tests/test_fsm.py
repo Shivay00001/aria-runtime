@@ -1,5 +1,7 @@
 """FSM tests."""
+
 import pytest
+
 from aria.kernel.fsm import SessionFSM
 from aria.models.errors import InvalidStateTransitionError
 from aria.models.types import SessionStatus

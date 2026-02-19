@@ -1,15 +1,15 @@
 """Sandbox tests — tool execution, timeout, output validation."""
-import sys
-import time
+
 import pytest
-from pathlib import Path
+
 from aria.models.errors import (
-    PathTraversalError, ToolInputValidationError,
-    ToolOutputValidationError, ToolSandboxError, ToolTimeoutError,
+    PathTraversalError,
+    ToolInputValidationError,
+    ToolTimeoutError,
 )
-from aria.tools.sandbox import validate_input, validate_output, validate_paths, run_tool_sandboxed
-from tests.conftest import make_manifest
 from aria.models.types import ToolPermission
+from aria.tools.sandbox import run_tool_sandboxed
+from tests.conftest import make_manifest
 
 
 class TestSandboxExecution:
@@ -17,28 +17,37 @@ class TestSandboxExecution:
         """read_file executes correctly on a real file."""
         f = tmp_path / "hello.txt"
         f.write_text("hello world")
-        from aria.tools.builtin.read_file import ToolPlugin
         import inspect
+
+        from aria.tools.builtin.read_file import ToolPlugin
+
         module_path = inspect.getfile(ToolPlugin)
-        from aria.tools.builtin import BUILTIN_TOOLS, BUILTIN_PATHS
         from aria.models.types import ToolManifest, ToolPermission
+
         # Use read_file manifest with allowed path set
         manifest = ToolManifest(
-            name="read_file", version="1.0.0",
+            name="read_file",
+            version="1.0.0",
             description="Read text contents of a file. Returns content string. Only allowed paths accessible.",
             permissions=frozenset({ToolPermission.FILESYSTEM_READ}),
-            timeout_seconds=10, max_memory_mb=64,
+            timeout_seconds=10,
+            max_memory_mb=64,
             input_schema={
                 "type": "object",
-                "properties": {"path": {"type": "string", "minLength": 1, "maxLength": 4096},
-                               "max_bytes": {"type": "integer", "minimum": 1, "maximum": 10485760}},
-                "required": ["path"], "additionalProperties": False,
+                "properties": {
+                    "path": {"type": "string", "minLength": 1, "maxLength": 4096},
+                    "max_bytes": {"type": "integer", "minimum": 1, "maximum": 10485760},
+                },
+                "required": ["path"],
+                "additionalProperties": False,
             },
             output_schema={
                 "type": "object",
-                "properties": {"content": {"type": "string"},
-                               "size_bytes": {"type": "integer"},
-                               "truncated": {"type": "boolean"}},
+                "properties": {
+                    "content": {"type": "string"},
+                    "size_bytes": {"type": "integer"},
+                    "truncated": {"type": "boolean"},
+                },
                 "required": ["content", "size_bytes", "truncated"],
                 "additionalProperties": False,
             },
@@ -62,14 +71,20 @@ class ToolPlugin:
         return {"result": "done"}
 """)
         from aria.models.types import ToolManifest, ToolPermission
+
         m = ToolManifest(
-            name="slow_tool", version="1.0.0",
+            name="slow_tool",
+            version="1.0.0",
             description="A deliberately slow tool for testing timeout behavior.",
             permissions=frozenset({ToolPermission.NONE}),
             timeout_seconds=1,
             input_schema={"type": "object", "properties": {}, "additionalProperties": True},
-            output_schema={"type": "object", "properties": {"result": {"type": "string"}},
-                           "required": ["result"], "additionalProperties": False},
+            output_schema={
+                "type": "object",
+                "properties": {"result": {"type": "string"}},
+                "required": ["result"],
+                "additionalProperties": False,
+            },
         )
         with pytest.raises(ToolTimeoutError):
             run_tool_sandboxed(m, {}, str(slow_tool))
@@ -84,14 +99,20 @@ class ToolPlugin:
         raise RuntimeError("Tool intentionally crashed")
 """)
         from aria.models.types import ToolManifest, ToolPermission
+
         m = ToolManifest(
-            name="bad_tool", version="1.0.0",
+            name="bad_tool",
+            version="1.0.0",
             description="A deliberately failing tool for testing error handling.",
             permissions=frozenset({ToolPermission.NONE}),
             timeout_seconds=10,
             input_schema={"type": "object", "properties": {}, "additionalProperties": True},
-            output_schema={"type": "object", "properties": {"result": {"type": "string"}},
-                           "required": ["result"], "additionalProperties": False},
+            output_schema={
+                "type": "object",
+                "properties": {"result": {"type": "string"}},
+                "required": ["result"],
+                "additionalProperties": False,
+            },
         )
         result = run_tool_sandboxed(m, {}, str(bad_tool))
         assert not result.ok
@@ -99,8 +120,9 @@ class ToolPlugin:
 
     def test_path_traversal_blocked_before_exec(self, tmp_path):
         """Path validation fires before subprocess spawns."""
-        m = make_manifest(permissions={ToolPermission.FILESYSTEM_READ},
-                          allowed_paths=(str(tmp_path),))
+        m = make_manifest(
+            permissions={ToolPermission.FILESYSTEM_READ}, allowed_paths=(str(tmp_path),)
+        )
         with pytest.raises(PathTraversalError):
             run_tool_sandboxed(m, {"value": "/etc/passwd"}, "/fake/path.py")
         # Note: value field has path-like content — checked by validate_paths
@@ -120,14 +142,20 @@ class ToolPlugin:
     def execute(d): return {"result": "ok"}
 """)
         from aria.models.types import ToolManifest, ToolPermission
+
         m = ToolManifest(
-            name="noop_tool", version="1.0.0",
+            name="noop_tool",
+            version="1.0.0",
             description="A no-operation tool for testing duration tracking.",
             permissions=frozenset({ToolPermission.NONE}),
             timeout_seconds=10,
             input_schema={"type": "object", "properties": {}, "additionalProperties": True},
-            output_schema={"type": "object", "properties": {"result": {"type": "string"}},
-                           "required": ["result"], "additionalProperties": False},
+            output_schema={
+                "type": "object",
+                "properties": {"result": {"type": "string"}},
+                "required": ["result"],
+                "additionalProperties": False,
+            },
         )
         result = run_tool_sandboxed(m, {}, str(noop))
         assert result.ok

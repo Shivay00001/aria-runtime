@@ -7,7 +7,9 @@ Security invariants:
   - Memory limited via resource in child.
   - SIGKILL on timeout.
 """
+
 from __future__ import annotations
+
 import json
 import os
 import subprocess
@@ -17,11 +19,17 @@ from pathlib import Path
 from typing import Any
 
 from aria.logging_setup import get_logger
-from aria.models.errors import (PathTraversalError, ToolInputValidationError,
-                                   ToolOutputValidationError, ToolSandboxError, ToolTimeoutError)
+from aria.models.errors import (
+    PathTraversalError,
+    ToolInputValidationError,
+    ToolOutputValidationError,
+    ToolSandboxError,
+    ToolTimeoutError,
+)
 from aria.models.types import ToolManifest, ToolResult
 
 _log = get_logger("aria.sandbox")
+
 
 # Minimal JSON schema validator using stdlib only
 def _validate_schema(data: Any, schema: dict, path: str = "", **kwargs: Any) -> list[str]:
@@ -129,7 +137,8 @@ def validate_paths(arguments: dict, manifest: ToolManifest) -> None:
             for base in allowed_bases
         ):
             raise PathTraversalError(
-                f"Path {value!r} → {resolved} is outside allowed: {manifest.allowed_paths}")
+                f"Path {value!r} → {resolved} is outside allowed: {manifest.allowed_paths}"
+            )
 
     for v in arguments.values():
         check(v)
@@ -140,7 +149,8 @@ def validate_input(arguments: dict, manifest: ToolManifest) -> None:
     errors = _validate_schema(arguments, manifest.input_schema, path="input")
     if errors:
         raise ToolInputValidationError(
-            f"Tool {manifest.name!r} input validation failed: {'; '.join(errors)}")
+            f"Tool {manifest.name!r} input validation failed: {'; '.join(errors)}"
+        )
 
 
 def validate_output(data: dict, manifest: ToolManifest) -> None:
@@ -148,11 +158,13 @@ def validate_output(data: dict, manifest: ToolManifest) -> None:
     errors = _validate_schema(data, manifest.output_schema, path="output")
     if errors:
         raise ToolOutputValidationError(
-            f"Tool {manifest.name!r} output validation failed: {'; '.join(errors)}")
+            f"Tool {manifest.name!r} output validation failed: {'; '.join(errors)}"
+        )
 
 
-def run_tool_sandboxed(manifest: ToolManifest, arguments: dict,
-                       tool_module_path: str) -> ToolResult:
+def run_tool_sandboxed(
+    manifest: ToolManifest, arguments: dict, tool_module_path: str
+) -> ToolResult:
     """
     Execute a tool in a subprocess. Steps:
     1. Validate input schema — raises on failure, no execution
@@ -168,11 +180,13 @@ def run_tool_sandboxed(manifest: ToolManifest, arguments: dict,
     validate_input(arguments, manifest)
     validate_paths(arguments, manifest)
 
-    payload = json.dumps({
-        "tool_module_path": tool_module_path,
-        "input": arguments,
-        "max_memory_mb": manifest.max_memory_mb,
-    })
+    payload = json.dumps(
+        {
+            "tool_module_path": tool_module_path,
+            "input": arguments,
+            "max_memory_mb": manifest.max_memory_mb,
+        }
+    )
 
     _log.debug("sandbox spawn", extra={"tool": manifest.name, "timeout": manifest.timeout_seconds})
 
@@ -189,7 +203,8 @@ def run_tool_sandboxed(manifest: ToolManifest, arguments: dict,
         ms = int((time.monotonic() - started) * 1000)
         _log.error("sandbox timeout", extra={"tool": manifest.name, "elapsed_ms": ms})
         raise ToolTimeoutError(
-            f"Tool {manifest.name!r} exceeded timeout of {manifest.timeout_seconds}s")
+            f"Tool {manifest.name!r} exceeded timeout of {manifest.timeout_seconds}s"
+        )
 
     ms = int((time.monotonic() - started) * 1000)
 
@@ -197,7 +212,8 @@ def run_tool_sandboxed(manifest: ToolManifest, arguments: dict,
         stderr = (proc.stderr or "")[:500]
         _log.error("sandbox crash", extra={"tool": manifest.name, "rc": proc.returncode})
         raise ToolSandboxError(
-            f"Tool {manifest.name!r} exited with code {proc.returncode}. stderr: {stderr}")
+            f"Tool {manifest.name!r} exited with code {proc.returncode}. stderr: {stderr}"
+        )
 
     stdout = (proc.stdout or "").strip()
     if not stdout:
@@ -209,12 +225,16 @@ def run_tool_sandboxed(manifest: ToolManifest, arguments: dict,
         raise ToolSandboxError(f"Tool {manifest.name!r} returned malformed JSON: {e}") from e
 
     if not payload_out.get("ok", False):
-        return ToolResult(ok=False, tool_name=manifest.name, tool_call_id="",
-                          error_type="ToolExecutionError",
-                          error_message=payload_out.get("error", "Unknown"), duration_ms=ms)
+        return ToolResult(
+            ok=False,
+            tool_name=manifest.name,
+            tool_call_id="",
+            error_type="ToolExecutionError",
+            error_message=payload_out.get("error", "Unknown"),
+            duration_ms=ms,
+        )
 
     data = payload_out.get("data") or {}
     validate_output(data, manifest)
 
-    return ToolResult(ok=True, tool_name=manifest.name, tool_call_id="",
-                      data=data, duration_ms=ms)
+    return ToolResult(ok=True, tool_name=manifest.name, tool_call_id="", data=data, duration_ms=ms)

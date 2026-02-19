@@ -5,20 +5,33 @@ Anthropic Claude adapter.
 Uses the official `anthropic` SDK if installed.
 Raises ImportError with clear instructions if not.
 """
+
 from __future__ import annotations
+
 import json
-from aria.models.errors import (ModelOutputValidationError, ModelProviderError,
-                                  ModelRateLimitError, ModelTimeoutError)
+
+from aria.models.errors import (
+    ModelOutputValidationError,
+    ModelProviderError,
+    ModelRateLimitError,
+    ModelTimeoutError,
+)
 from aria.models.providers.base import ModelProviderInterface
-from aria.models.types import (ActionType, Message, MessageRole, PromptRequest,
-                                 RawModelResponse, ToolCallRequest, sha256_str)
+from aria.models.types import (
+    ActionType,
+    MessageRole,
+    PromptRequest,
+    RawModelResponse,
+    ToolCallRequest,
+    sha256_str,
+)
 from aria.security.secrets import get_secrets_loader
 
 # Cost per 1M tokens (USD) — update when pricing changes
 _COST_TABLE: dict[str, dict[str, float]] = {
     "claude-haiku-4-5-20251001": {"input": 0.80, "output": 4.00},
-    "claude-sonnet-4-6":         {"input": 3.00, "output": 15.00},
-    "claude-opus-4-6":           {"input": 15.00, "output": 75.00},
+    "claude-sonnet-4-6": {"input": 3.00, "output": 15.00},
+    "claude-opus-4-6": {"input": 15.00, "output": 75.00},
 }
 
 
@@ -69,8 +82,10 @@ class AnthropicProvider(ModelProviderInterface):
         except anthropic.RateLimitError as exc:
             raise ModelRateLimitError(f"Anthropic rate limit: {exc}") from exc
         except anthropic.APIStatusError as exc:
-            raise ModelProviderError(f"Anthropic API error ({exc.status_code}): {exc.message}",
-                                     status_code=exc.status_code) from exc
+            raise ModelProviderError(
+                f"Anthropic API error ({exc.status_code}): {exc.message}",
+                status_code=exc.status_code,
+            ) from exc
         except (anthropic.APIConnectionError, anthropic.APITimeoutError) as exc:
             raise ModelTimeoutError(f"Anthropic timeout: {exc}") from exc
 
@@ -93,11 +108,18 @@ def _build_messages(messages: tuple) -> list[dict]:
         if msg.role == MessageRole.SYSTEM:
             continue
         if msg.role == MessageRole.TOOL:
-            result.append({"role": "user", "content": [{
-                "type": "tool_result",
-                "tool_use_id": msg.tool_call_id or "unknown",
-                "content": msg.content,
-            }]})
+            result.append(
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": msg.tool_call_id or "unknown",
+                            "content": msg.content,
+                        }
+                    ],
+                }
+            )
         elif msg.role == MessageRole.ASSISTANT:
             result.append({"role": "assistant", "content": msg.content})
         else:
@@ -106,8 +128,10 @@ def _build_messages(messages: tuple) -> list[dict]:
 
 
 def _build_tools(tools: tuple) -> list[dict]:
-    return [{"name": t.name, "description": t.description,
-             "input_schema": t.input_schema} for t in tools]
+    return [
+        {"name": t.name, "description": t.description, "input_schema": t.input_schema}
+        for t in tools
+    ]
 
 
 def _parse_response(response, model: str, provider: str) -> RawModelResponse:  # type: ignore
@@ -124,20 +148,25 @@ def _parse_response(response, model: str, provider: str) -> RawModelResponse:  #
                     tool_name=block.name,
                     arguments=dict(block.input) if isinstance(block.input, dict) else {},
                 ),
-                input_tokens=in_tok, output_tokens=out_tok,
-                model=model, provider=provider, raw_response_hash=raw_hash,
+                input_tokens=in_tok,
+                output_tokens=out_tok,
+                model=model,
+                provider=provider,
+                raw_response_hash=raw_hash,
             )
 
-    text = " ".join(
-        b.text for b in response.content if hasattr(b, "text") and b.text
-    ).strip()
+    text = " ".join(b.text for b in response.content if hasattr(b, "text") and b.text).strip()
     if not text:
         raise ModelOutputValidationError(
-            f"Model returned empty response. Stop reason: {response.stop_reason}")
+            f"Model returned empty response. Stop reason: {response.stop_reason}"
+        )
 
     return RawModelResponse(
         action=ActionType.FINAL_ANSWER,
         final_answer=text,
-        input_tokens=in_tok, output_tokens=out_tok,
-        model=model, provider=provider, raw_response_hash=raw_hash,
+        input_tokens=in_tok,
+        output_tokens=out_tok,
+        model=model,
+        provider=provider,
+        raw_response_hash=raw_hash,
     )

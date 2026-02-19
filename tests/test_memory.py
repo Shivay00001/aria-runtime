@@ -1,8 +1,15 @@
 """Unit tests: SQLite memory and audit layer."""
+
 from __future__ import annotations
-import pytest
-from aria.models.types import (AuditEvent, KernelConfig, LogLevel, Message,
-                                   MessageRole, SessionStatus, StepStatus, StepTrace, StepType)
+
+from aria.models.types import (
+    AuditEvent,
+    KernelConfig,
+    LogLevel,
+    Message,
+    MessageRole,
+    SessionStatus,
+)
 
 
 class TestSQLiteMemory:
@@ -53,18 +60,22 @@ class TestSQLiteMemory:
 
     def test_audit_event_written_and_retrieved(self, tmp_db):
         tmp_db.create_session("s1", "T", KernelConfig())
-        tmp_db.write_event(AuditEvent(
-            session_id="s1", event_type="test_event",
-            level=LogLevel.INFO, payload={"x": 1}))
+        tmp_db.write_event(
+            AuditEvent(
+                session_id="s1", event_type="test_event", level=LogLevel.INFO, payload={"x": 1}
+            )
+        )
         events = tmp_db.get_session_events("s1")
         assert any(e["event_type"] == "test_event" for e in events)
 
     def test_chain_valid_on_fresh_session(self, tmp_db):
         tmp_db.create_session("s1", "T", KernelConfig())
-        tmp_db.write_event(AuditEvent(session_id="s1", event_type="e1",
-                                       level=LogLevel.INFO, payload={}))
-        tmp_db.write_event(AuditEvent(session_id="s1", event_type="e2",
-                                       level=LogLevel.INFO, payload={"step": 1}))
+        tmp_db.write_event(
+            AuditEvent(session_id="s1", event_type="e1", level=LogLevel.INFO, payload={})
+        )
+        tmp_db.write_event(
+            AuditEvent(session_id="s1", event_type="e2", level=LogLevel.INFO, payload={"step": 1})
+        )
         assert tmp_db.verify_chain("s1")
 
     def test_unknown_session_events_empty(self, tmp_db):

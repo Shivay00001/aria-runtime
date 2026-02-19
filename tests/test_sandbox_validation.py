@@ -1,27 +1,35 @@
 """Unit tests for sandbox validation functions (no subprocess needed)."""
+
 import pytest
-from pathlib import Path
-from aria.models.errors import PathTraversalError, ToolInputValidationError, ToolOutputValidationError
+
+from aria.models.errors import (
+    PathTraversalError,
+    ToolInputValidationError,
+    ToolOutputValidationError,
+)
+from aria.models.types import ToolPermission
 from aria.tools.sandbox import validate_input, validate_output, validate_paths
 from tests.conftest import make_manifest
-from aria.models.types import ToolPermission
 
 
 class TestValidatePaths:
     def test_within_allowlist_passes(self, tmp_path):
-        m = make_manifest(permissions={ToolPermission.FILESYSTEM_READ},
-                          allowed_paths=(str(tmp_path),))
+        m = make_manifest(
+            permissions={ToolPermission.FILESYSTEM_READ}, allowed_paths=(str(tmp_path),)
+        )
         validate_paths({"path": str(tmp_path / "file.txt")}, m)
 
     def test_dotdot_traversal_blocked(self, tmp_path):
-        m = make_manifest(permissions={ToolPermission.FILESYSTEM_READ},
-                          allowed_paths=(str(tmp_path),))
+        m = make_manifest(
+            permissions={ToolPermission.FILESYSTEM_READ}, allowed_paths=(str(tmp_path),)
+        )
         with pytest.raises(PathTraversalError):
             validate_paths({"path": str(tmp_path) + "/../../../etc/passwd"}, m)
 
     def test_etc_blocked(self, tmp_path):
-        m = make_manifest(permissions={ToolPermission.FILESYSTEM_READ},
-                          allowed_paths=(str(tmp_path),))
+        m = make_manifest(
+            permissions={ToolPermission.FILESYSTEM_READ}, allowed_paths=(str(tmp_path),)
+        )
         with pytest.raises(PathTraversalError):
             validate_paths({"path": "/etc/hosts"}, m)
 
@@ -30,15 +38,17 @@ class TestValidatePaths:
         validate_paths({"path": "/etc/hosts"}, m)  # no raise
 
     def test_non_path_string_value_skipped(self, tmp_path):
-        m = make_manifest(permissions={ToolPermission.FILESYSTEM_READ},
-                          allowed_paths=(str(tmp_path),))
+        m = make_manifest(
+            permissions={ToolPermission.FILESYSTEM_READ}, allowed_paths=(str(tmp_path),)
+        )
         validate_paths({"value": "just a regular string"}, m)  # no raise
 
     def test_nested_subdirectory_allowed(self, tmp_path):
         sub = tmp_path / "a" / "b" / "c"
         sub.mkdir(parents=True)
-        m = make_manifest(permissions={ToolPermission.FILESYSTEM_READ},
-                          allowed_paths=(str(tmp_path),))
+        m = make_manifest(
+            permissions={ToolPermission.FILESYSTEM_READ}, allowed_paths=(str(tmp_path),)
+        )
         validate_paths({"path": str(sub / "file.txt")}, m)
 
 

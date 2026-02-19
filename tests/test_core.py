@@ -1,13 +1,16 @@
 """Unit tests: FSM, types, scrubber, injection scanner, circuit breaker."""
+
 from __future__ import annotations
+
 import pytest
+
 from aria.kernel.fsm import SessionFSM
 from aria.models.errors import InvalidStateTransitionError
 from aria.models.types import SessionStatus, ToolManifest, ToolPermission
-from aria.security.scrubber import SecretsScrubberProcessor, scan_for_injection
-
+from aria.security.scrubber import scan_for_injection
 
 # ══ FSM ══════════════════════════════════════════════════════════════════════
+
 
 class TestSessionFSM:
     def test_initial_state_is_idle(self):
@@ -65,13 +68,15 @@ class TestSessionFSM:
 
 # ══ Scrubber ══════════════════════════════════════════════════════════════════
 
+
 class TestScrubber:
     def _s(self, secrets=frozenset()):
         from aria.security.scrubber import scrub_record
+
         return lambda rec: scrub_record(rec, secrets)
 
     def test_redacts_known_secret_in_string(self):
-        s = scrub = self._s(frozenset({"supersecret123"}))
+        scrub = self._s(frozenset({"supersecret123"}))
         out = scrub({"event": "calling with key supersecret123"})
         assert "supersecret123" not in out["event"]
         assert "[REDACTED]" in out["event"]
@@ -95,6 +100,7 @@ class TestScrubber:
 
 
 # ══ Injection Scanner ══════════════════════════════════════════════════════════
+
 
 class TestInjectionScanner:
     def test_clean_input(self):
@@ -131,54 +137,67 @@ class TestInjectionScanner:
 
 # ══ ToolManifest Validation ════════════════════════════════════════════════════
 
+
 class TestToolManifest:
     def test_valid_manifest(self):
         m = ToolManifest(
-            name="my_tool", version="1.0.0",
+            name="my_tool",
+            version="1.0.0",
             description="A test tool doing useful things here.",
             permissions=frozenset({ToolPermission.NONE}),
             timeout_seconds=30,
-            input_schema={"type":"object","properties":{}},
-            output_schema={"type":"object","properties":{}},
+            input_schema={"type": "object", "properties": {}},
+            output_schema={"type": "object", "properties": {}},
         )
         assert m.name == "my_tool"
 
     def test_uppercase_name_rejected(self):
         with pytest.raises(ValueError, match="invalid"):
             ToolManifest(
-                name="MyTool", version="1.0.0",
+                name="MyTool",
+                version="1.0.0",
                 description="A test tool doing useful things here.",
                 permissions=frozenset({ToolPermission.NONE}),
                 timeout_seconds=30,
-                input_schema={}, output_schema={},
+                input_schema={},
+                output_schema={},
             )
 
     def test_relative_path_rejected(self):
         with pytest.raises(ValueError, match="absolute"):
             ToolManifest(
-                name="f_tool", version="1.0.0",
+                name="f_tool",
+                version="1.0.0",
                 description="A test tool doing useful things here.",
                 permissions=frozenset({ToolPermission.FILESYSTEM_READ}),
-                timeout_seconds=10, input_schema={}, output_schema={},
+                timeout_seconds=10,
+                input_schema={},
+                output_schema={},
                 allowed_paths=("relative/path",),
             )
 
     def test_absolute_path_accepted(self):
         m = ToolManifest(
-            name="f_tool", version="1.0.0",
+            name="f_tool",
+            version="1.0.0",
             description="A test tool doing useful things here.",
             permissions=frozenset({ToolPermission.FILESYSTEM_READ}),
-            timeout_seconds=10, input_schema={}, output_schema={},
+            timeout_seconds=10,
+            input_schema={},
+            output_schema={},
             allowed_paths=("/workspace",),
         )
         assert "/workspace" in m.allowed_paths
 
     def test_manifest_is_frozen(self):
         m = ToolManifest(
-            name="t_tool", version="1.0.0",
+            name="t_tool",
+            version="1.0.0",
             description="A test tool doing useful things here.",
             permissions=frozenset({ToolPermission.NONE}),
-            timeout_seconds=10, input_schema={}, output_schema={},
+            timeout_seconds=10,
+            input_schema={},
+            output_schema={},
         )
         with pytest.raises((AttributeError, TypeError)):
             m.name = "other"  # type: ignore

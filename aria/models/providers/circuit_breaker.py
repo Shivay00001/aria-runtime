@@ -1,19 +1,27 @@
 """aria/models/providers/circuit_breaker.py — Per-provider circuit breaker."""
+
 from __future__ import annotations
+
 import time
 from enum import Enum
+
 from aria.models.errors import CircuitBreakerOpenError
 
 
 class CBState(str, Enum):
-    CLOSED    = "CLOSED"
-    OPEN      = "OPEN"
+    CLOSED = "CLOSED"
+    OPEN = "OPEN"
     HALF_OPEN = "HALF_OPEN"
 
 
 class CircuitBreaker:
-    def __init__(self, provider: str, failure_threshold: int = 3,
-                 window_seconds: float = 60.0, recovery_seconds: float = 120.0) -> None:
+    def __init__(
+        self,
+        provider: str,
+        failure_threshold: int = 3,
+        window_seconds: float = 60.0,
+        recovery_seconds: float = 120.0,
+    ) -> None:
         self.provider = provider
         self._threshold = failure_threshold
         self._window = window_seconds
@@ -58,5 +66,9 @@ class CircuitBreaker:
         self._opened_at = None
 
     def status_dict(self) -> dict:
-        return {"provider": self.provider, "state": self.state.value,
-                "failure_count": len(self._failures), "opened_at": self._opened_at}
+        return {
+            "provider": self.provider,
+            "state": self.state.value,
+            "failure_count": len(self._failures),
+            "opened_at": self._opened_at,
+        }

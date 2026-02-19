@@ -3,69 +3,81 @@ aria/models/types.py  —  All shared data contracts.
 Uses stdlib dataclasses + enums. No external deps.
 Immutable records use frozen=True. Mutable step traces use frozen=False.
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
 import uuid
 from dataclasses import dataclass, field
+from datetime import UTC
 from enum import Enum
-from typing import Any, Optional
-
+from typing import Any
 
 # ── Enumerations ──────────────────────────────────────────────────────────────
 
+
 class SessionStatus(str, Enum):
-    IDLE      = "IDLE"
-    RUNNING   = "RUNNING"
-    WAITING   = "WAITING"
-    DONE      = "DONE"
-    FAILED    = "FAILED"
+    IDLE = "IDLE"
+    RUNNING = "RUNNING"
+    WAITING = "WAITING"
+    DONE = "DONE"
+    FAILED = "FAILED"
     CANCELLED = "CANCELLED"
 
+
 class StepType(str, Enum):
-    MODEL_CALL   = "model_call"
-    TOOL_CALL    = "tool_call"
+    MODEL_CALL = "model_call"
+    TOOL_CALL = "tool_call"
     FINAL_ANSWER = "final_answer"
+
 
 class StepStatus(str, Enum):
-    STARTED   = "started"
+    STARTED = "started"
     COMPLETED = "completed"
-    FAILED    = "failed"
+    FAILED = "failed"
+
 
 class ToolPermission(str, Enum):
-    NONE             = "none"
-    FILESYSTEM_READ  = "fs_read"
+    NONE = "none"
+    FILESYSTEM_READ = "fs_read"
     FILESYSTEM_WRITE = "fs_write"
-    NETWORK          = "network"
-    SHELL            = "shell"
+    NETWORK = "network"
+    SHELL = "shell"
+
 
 class ActionType(str, Enum):
-    TOOL_CALL    = "tool_call"
+    TOOL_CALL = "tool_call"
     FINAL_ANSWER = "final_answer"
 
+
 class MessageRole(str, Enum):
-    SYSTEM    = "system"
-    USER      = "user"
+    SYSTEM = "system"
+    USER = "user"
     ASSISTANT = "assistant"
-    TOOL      = "tool"
+    TOOL = "tool"
+
 
 class LogLevel(str, Enum):
-    DEBUG    = "DEBUG"
-    INFO     = "INFO"
-    WARN     = "WARNING"
-    ERROR    = "ERROR"
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARN = "WARNING"
+    ERROR = "ERROR"
     CRITICAL = "CRITICAL"
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def new_id() -> str:
     return str(uuid.uuid4())
 
+
 def utcnow() -> str:
-    from datetime import datetime, timezone
-    return datetime.now(timezone.utc).isoformat()
+    from datetime import datetime
+
+    return datetime.now(UTC).isoformat()
+
 
 def sha256_str(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
@@ -73,10 +85,12 @@ def sha256_str(value: str) -> str:
 
 # ── Validation helpers ────────────────────────────────────────────────────────
 
+
 def _validate_required(data: dict, *keys: str, class_name: str = "") -> None:
     for k in keys:
         if k not in data or data[k] is None:
             raise ValueError(f"{class_name}: required field {k!r} is missing or None")
+
 
 def _validate_str(value: Any, field: str, min_len: int = 0, max_len: int = 65535) -> str:
     if not isinstance(value, str):
@@ -86,6 +100,7 @@ def _validate_str(value: Any, field: str, min_len: int = 0, max_len: int = 65535
     if len(value) > max_len:
         raise ValueError(f"{field} too long (max {max_len})")
     return value
+
 
 def _validate_int(value: Any, field: str, ge: int = 0, le: int = 2**31) -> int:
     if not isinstance(value, int):
@@ -98,6 +113,7 @@ def _validate_int(value: Any, field: str, ge: int = 0, le: int = 2**31) -> int:
 
 
 # ── Core data structures ──────────────────────────────────────────────────────
+
 
 @dataclass(frozen=True)
 class ToolManifest:
@@ -113,9 +129,10 @@ class ToolManifest:
 
     def __post_init__(self) -> None:
         import re
-        if not re.match(r'^[a-z][a-z0-9_]{1,63}$', self.name):
+
+        if not re.match(r"^[a-z][a-z0-9_]{1,63}$", self.name):
             raise ValueError(f"Tool name {self.name!r} invalid (must match [a-z][a-z0-9_]{{1,63}})")
-        if not re.match(r'^\d+\.\d+\.\d+$', self.version):
+        if not re.match(r"^\d+\.\d+\.\d+$", self.version):
             raise ValueError(f"Version {self.version!r} invalid (must be semver like 1.0.0)")
         if len(self.description) < 10:
             raise ValueError("description must be at least 10 characters")
@@ -125,6 +142,7 @@ class ToolManifest:
             raise ValueError("max_memory_mb must be 32-2048")
         for p in self.allowed_paths:
             from pathlib import Path
+
             if not Path(p).is_absolute():
                 raise ValueError(f"allowed_paths must be absolute, got: {p!r}")
 
@@ -133,7 +151,7 @@ class ToolManifest:
             "name": self.name,
             "version": self.version,
             "description": self.description,
-            "permissions": [p.value if hasattr(p, 'value') else p for p in self.permissions],
+            "permissions": [p.value if hasattr(p, "value") else p for p in self.permissions],
             "timeout_seconds": self.timeout_seconds,
             "max_memory_mb": self.max_memory_mb,
             "allowed_paths": list(self.allowed_paths),
@@ -144,17 +162,19 @@ class ToolManifest:
 class KernelConfig:
     primary_provider: str = "ollama"
     primary_model: str = "tinyllama"
-    fallback_provider: Optional[str] = None
-    fallback_model: Optional[str] = None
+    fallback_provider: str | None = None
+    fallback_model: str | None = None
     max_steps: int = 20
     max_cost_usd: float = 1.0
     max_context_tokens: int = 80000
     allowed_permissions: frozenset = field(
-        default_factory=lambda: frozenset({
-            ToolPermission.NONE,
-            ToolPermission.FILESYSTEM_READ,
-            ToolPermission.FILESYSTEM_WRITE,
-        })
+        default_factory=lambda: frozenset(
+            {
+                ToolPermission.NONE,
+                ToolPermission.FILESYSTEM_READ,
+                ToolPermission.FILESYSTEM_WRITE,
+            }
+        )
     )
     plugin_dirs: tuple = ()
     log_level: str = "INFO"
@@ -162,22 +182,24 @@ class KernelConfig:
     log_path: str = "~/.aria/logs/aria.jsonl"
 
     def to_json(self) -> str:
-        return json.dumps({
-            "primary_provider": self.primary_provider,
-            "primary_model": self.primary_model,
-            "max_steps": self.max_steps,
-            "max_cost_usd": self.max_cost_usd,
-            "log_level": self.log_level,
-        })
+        return json.dumps(
+            {
+                "primary_provider": self.primary_provider,
+                "primary_model": self.primary_model,
+                "max_steps": self.max_steps,
+                "max_cost_usd": self.max_cost_usd,
+                "log_level": self.log_level,
+            }
+        )
 
 
 @dataclass(frozen=True)
 class SessionRequest:
     task: str
     session_id: str = field(default_factory=new_id)
-    provider_override: Optional[str] = None
-    model_override: Optional[str] = None
-    max_steps_override: Optional[int] = None
+    provider_override: str | None = None
+    model_override: str | None = None
+    max_steps_override: int | None = None
     dry_run: bool = False
 
     def __post_init__(self) -> None:
@@ -191,20 +213,20 @@ class SessionRequest:
 class SessionResult:
     session_id: str
     status: SessionStatus
-    answer: Optional[str]
+    answer: str | None
     steps_taken: int
     total_cost_usd: float
     duration_ms: int
-    error_type: Optional[str] = None
-    error_message: Optional[str] = None
+    error_type: str | None = None
+    error_message: str | None = None
 
 
 @dataclass(frozen=True)
 class Message:
     role: MessageRole
     content: str
-    tool_name: Optional[str] = None
-    tool_call_id: Optional[str] = None
+    tool_name: str | None = None
+    tool_call_id: str | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -215,7 +237,7 @@ class Message:
         }
 
     @staticmethod
-    def from_dict(d: dict) -> "Message":
+    def from_dict(d: dict) -> Message:
         return Message(
             role=MessageRole(d["role"]),
             content=d["content"],
@@ -239,8 +261,8 @@ class RawModelResponse:
     model: str
     provider: str
     raw_response_hash: str
-    tool_call: Optional[ToolCallRequest] = None
-    final_answer: Optional[str] = None
+    tool_call: ToolCallRequest | None = None
+    final_answer: str | None = None
 
     def __post_init__(self) -> None:
         if self.action == ActionType.TOOL_CALL and self.tool_call is None:
@@ -254,9 +276,9 @@ class ToolResult:
     ok: bool
     tool_name: str
     tool_call_id: str
-    data: Optional[dict] = None
-    error_type: Optional[str] = None
-    error_message: Optional[str] = None
+    data: dict | None = None
+    error_type: str | None = None
+    error_message: str | None = None
     duration_ms: int = 0
 
 
@@ -267,17 +289,17 @@ class StepTrace:
     step_type: StepType
     status: StepStatus
     step_id: str = field(default_factory=new_id)
-    prompt_hash: Optional[str] = None
-    model_output_hash: Optional[str] = None
-    tool_name: Optional[str] = None
-    tool_input_json: Optional[str] = None
-    tool_output_json: Optional[str] = None
-    input_tokens: Optional[int] = None
-    output_tokens: Optional[int] = None
-    cost_usd: Optional[float] = None
-    duration_ms: Optional[int] = None
+    prompt_hash: str | None = None
+    model_output_hash: str | None = None
+    tool_name: str | None = None
+    tool_input_json: str | None = None
+    tool_output_json: str | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    cost_usd: float | None = None
+    duration_ms: int | None = None
     started_at: str = field(default_factory=utcnow)
-    finished_at: Optional[str] = None
+    finished_at: str | None = None
     audit_chain_hash: str = ""
 
 
@@ -288,7 +310,7 @@ class AuditEvent:
     level: LogLevel
     payload: dict
     event_id: str = field(default_factory=new_id)
-    step_id: Optional[str] = None
+    step_id: str | None = None
     chain_hash: str = ""
     timestamp: str = field(default_factory=utcnow)
 

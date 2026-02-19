@@ -1,11 +1,14 @@
 """aria/tools/registry.py — Tool registry: load, validate, enforce permissions."""
+
 from __future__ import annotations
+
 import importlib.util
 from pathlib import Path
 from typing import Any
+
 from aria.logging_setup import get_logger
 from aria.models.errors import ManifestValidationError, PermissionDeniedError, UnknownToolError
-from aria.models.types import KernelConfig, ToolManifest, ToolPermission
+from aria.models.types import KernelConfig, ToolManifest
 
 _log = get_logger("aria.registry")
 
@@ -21,6 +24,7 @@ class ToolRegistry:
 
     def build(self, extra_plugin_dirs: list | None = None) -> None:
         from aria.tools.builtin import BUILTIN_TOOLS
+
         for cls in BUILTIN_TOOLS:
             self._register(cls, module_path=_module_path(cls))
         dirs = [Path(d).expanduser() for d in self._config.plugin_dirs]
@@ -59,7 +63,8 @@ class ToolRegistry:
         if disallowed:
             raise PermissionDeniedError(
                 f"Tool {manifest.name!r} requires {disallowed} "
-                f"not in allowed_permissions: {self._config.allowed_permissions}")
+                f"not in allowed_permissions: {self._config.allowed_permissions}"
+            )
         if manifest.name in self._manifests:
             raise ManifestValidationError(f"Duplicate tool name: {manifest.name!r}")
         self._manifests[manifest.name] = manifest
@@ -69,7 +74,9 @@ class ToolRegistry:
 
     def get_manifest(self, name: str) -> ToolManifest:
         if name not in self._manifests:
-            raise UnknownToolError(f"Tool {name!r} not registered. Available: {list(self._manifests)}")
+            raise UnknownToolError(
+                f"Tool {name!r} not registered. Available: {list(self._manifests)}"
+            )
         return self._manifests[name]
 
     def get_executor(self, name: str) -> Any:
@@ -90,6 +97,7 @@ class ToolRegistry:
 
 def _module_path(cls: Any) -> str:
     import inspect
+
     try:
         return inspect.getfile(cls)
     except (TypeError, OSError):

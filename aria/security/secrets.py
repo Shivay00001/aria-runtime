@@ -1,7 +1,11 @@
 """aria/security/secrets.py — Env-based secrets loader."""
+
 from __future__ import annotations
+
 import os
+
 from aria.models.errors import SecretInvalidError, SecretNotFoundError
+
 
 class SecretsLoader:
     def __init__(self) -> None:
@@ -13,11 +17,13 @@ class SecretsLoader:
         value = os.environ.get(env_key)
         if value is None:
             raise SecretNotFoundError(
-                f"Required env var {env_key!r} not set. Set it before starting ARIA.")
+                f"Required env var {env_key!r} not set. Set it before starting ARIA."
+            )
         value = value.strip()
         if len(value) < min_length:
             raise SecretInvalidError(
-                f"Env var {env_key!r} appears invalid (length {len(value)} < {min_length})")
+                f"Env var {env_key!r} appears invalid (length {len(value)} < {min_length})"
+            )
         self._loaded[env_key] = value
         return value
 
@@ -35,6 +41,7 @@ class SecretsLoader:
 
 
 _loader: SecretsLoader | None = None
+
 
 def get_secrets_loader() -> SecretsLoader:
     global _loader
