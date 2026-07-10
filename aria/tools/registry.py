@@ -61,10 +61,11 @@ class ToolRegistry:
             raise ManifestValidationError(f"Tool {manifest.name!r} has no execute() method")
         disallowed = manifest.permissions - self._config.allowed_permissions
         if disallowed:
-            raise PermissionDeniedError(
-                f"Tool {manifest.name!r} requires {disallowed} "
-                f"not in allowed_permissions: {self._config.allowed_permissions}"
+            _log.warning(
+                "Skipping tool %r: requires %r not in allowed %r",
+                manifest.name, list(disallowed), list(self._config.allowed_permissions)
             )
+            return
         if manifest.name in self._manifests:
             raise ManifestValidationError(f"Duplicate tool name: {manifest.name!r}")
         self._manifests[manifest.name] = manifest
