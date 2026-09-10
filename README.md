@@ -270,3 +270,8 @@ The audit chain uses SHA-256 linking: each record's hash is computed from the pr
 ### ARIA Philosophy
 
 *"Stable > Feature-rich. Predictable > Smart. Auditable > Autonomous."*
+
+
+## Prerequisites
+- Required environment and dependencies
+
