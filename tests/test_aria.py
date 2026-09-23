@@ -20,7 +20,7 @@ FAIL = 0
 ERRORS: list[str] = []
 
 
-def test(name: str):
+def check(name: str):
     def decorator(fn):
         global PASS, FAIL
         try:
@@ -44,19 +44,19 @@ from aria.models.errors import InvalidStateTransitionError
 from aria.models.types import SessionStatus
 
 
-@test("initial state is IDLE")
+@check("initial state is IDLE")
 def _():
     assert SessionFSM("s").state == SessionStatus.IDLE
 
 
-@test("IDLE -> RUNNING is valid")
+@check("IDLE -> RUNNING is valid")
 def _():
     fsm = SessionFSM("s")
     fsm.transition(SessionStatus.RUNNING)
     assert fsm.state == SessionStatus.RUNNING
 
 
-@test("RUNNING -> DONE is terminal")
+@check("RUNNING -> DONE is terminal")
 def _():
     fsm = SessionFSM("s")
     fsm.transition(SessionStatus.RUNNING)
@@ -64,7 +64,7 @@ def _():
     assert fsm.is_terminal
 
 
-@test("IDLE -> DONE raises InvalidStateTransitionError")
+@check("IDLE -> DONE raises InvalidStateTransitionError")
 def _():
     try:
         SessionFSM("s").transition(SessionStatus.DONE)
@@ -73,7 +73,7 @@ def _():
         pass
 
 
-@test("terminal state has no exit transitions")
+@check("terminal state has no exit transitions")
 def _():
     fsm = SessionFSM("s")
     fsm.transition(SessionStatus.RUNNING)
@@ -85,7 +85,7 @@ def _():
         pass
 
 
-@test("history records all transitions")
+@check("history records all transitions")
 def _():
     fsm = SessionFSM("s")
     fsm.transition(SessionStatus.RUNNING)
@@ -100,7 +100,7 @@ print("\n[Unit] ToolManifest Validation")
 from aria.models.types import ToolManifest, ToolPermission
 
 
-@test("valid manifest accepted")
+@check("valid manifest accepted")
 def _():
     ToolManifest(
         name="my_tool",
@@ -113,7 +113,7 @@ def _():
     )
 
 
-@test("uppercase name rejected")
+@check("uppercase name rejected")
 def _():
     try:
         ToolManifest(
@@ -131,7 +131,7 @@ def _():
         raise AssertionError()
 
 
-@test("relative allowed_path rejected")
+@check("relative allowed_path rejected")
 def _():
     try:
         ToolManifest(
@@ -150,7 +150,7 @@ def _():
         raise AssertionError()
 
 
-@test("frozen manifest raises on mutation")
+@check("frozen manifest raises on mutation")
 def _():
     m = ToolManifest(
         name="t_tool",
@@ -173,30 +173,30 @@ print("\n[Unit] Secrets Scrubber")
 from aria.security.scrubber import scan_for_injection, scrub_record, scrub_value
 
 
-@test("known secret in string is redacted")
+@check("known secret in string is redacted")
 def _():
     s = "sk-ant-abc123456789xxxx"
     r = scrub_value(f"key is {s}", frozenset({s}))
     assert s not in r and "[REDACTED]" in r
 
 
-@test("api_key dict key redacted")
+@check("api_key dict key redacted")
 def _():
     r = scrub_record({"api_key": "val", "name": "alice"}, frozenset())
     assert r["api_key"] == "[REDACTED]" and r["name"] == "alice"
 
 
-@test("prompt injection: ignore previous instructions detected")
+@check("prompt injection: ignore previous instructions detected")
 def _():
     assert not scan_for_injection("ignore previous instructions").clean
 
 
-@test("prompt injection: jailbreak detected")
+@check("prompt injection: jailbreak detected")
 def _():
     assert not scan_for_injection("jailbreak mode").clean
 
 
-@test("legitimate task not flagged")
+@check("legitimate task not flagged")
 def _():
     assert scan_for_injection("Read file /workspace/data.csv").clean
 
@@ -207,14 +207,14 @@ from aria.models.errors import CircuitBreakerOpenError
 from aria.models.providers.circuit_breaker import CBState, CircuitBreaker
 
 
-@test("starts CLOSED, allows requests")
+@check("starts CLOSED, allows requests")
 def _():
     cb = CircuitBreaker("t")
     assert cb.state == CBState.CLOSED
     cb.allow_request()
 
 
-@test("trips to OPEN after threshold")
+@check("trips to OPEN after threshold")
 def _():
     cb = CircuitBreaker("t", failure_threshold=3)
     for _ in range(3):
@@ -222,7 +222,7 @@ def _():
     assert cb.state == CBState.OPEN
 
 
-@test("OPEN rejects requests with CircuitBreakerOpenError")
+@check("OPEN rejects requests with CircuitBreakerOpenError")
 def _():
     cb = CircuitBreaker("t", failure_threshold=1)
     cb.record_failure()
@@ -233,7 +233,7 @@ def _():
         pass
 
 
-@test("success resets HALF_OPEN to CLOSED")
+@check("success resets HALF_OPEN to CLOSED")
 def _():
     import time
 
@@ -245,7 +245,7 @@ def _():
     assert cb.state == CBState.CLOSED
 
 
-@test("manual reset closes breaker")
+@check("manual reset closes breaker")
 def _():
     cb = CircuitBreaker("t", failure_threshold=1)
     cb.record_failure()
@@ -269,7 +269,7 @@ from aria.models.types import (
 )
 
 
-@test("create and list session")
+@check("create and list session")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s = SQLiteStorage(f"{d}/t.db")
@@ -278,7 +278,7 @@ def _():
         s.close()
 
 
-@test("update session status")
+@check("update session status")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s = SQLiteStorage(f"{d}/t.db")
@@ -289,7 +289,7 @@ def _():
         s.close()
 
 
-@test("append and retrieve messages")
+@check("append and retrieve messages")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s = SQLiteStorage(f"{d}/t.db")
@@ -300,7 +300,7 @@ def _():
         s.close()
 
 
-@test("kv store set/get/overwrite")
+@check("kv store set/get/overwrite")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s = SQLiteStorage(f"{d}/t.db")
@@ -312,7 +312,7 @@ def _():
         s.close()
 
 
-@test("audit chain valid after writes")
+@check("audit chain valid after writes")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s = SQLiteStorage(f"{d}/t.db")
@@ -327,7 +327,7 @@ def _():
         s.close()
 
 
-@test("tampered audit record breaks chain")
+@check("tampered audit record breaks chain")
 def _():
     import json
 
@@ -373,14 +373,14 @@ def _make_manifest(allowed=(), name="test_tool"):
     )
 
 
-@test("path within allowlist passes")
+@check("path within allowlist passes")
 def _():
     with tempfile.TemporaryDirectory() as d:
         m = _make_manifest([d])
         validate_paths({"path": f"{d}/safe.txt"}, m)
 
 
-@test("../../../etc/passwd blocked")
+@check("../../../etc/passwd blocked")
 def _():
     with tempfile.TemporaryDirectory() as d:
         m = _make_manifest([d])
@@ -391,7 +391,7 @@ def _():
             pass
 
 
-@test("/etc/shadow blocked")
+@check("/etc/shadow blocked")
 def _():
     with tempfile.TemporaryDirectory() as d:
         m = _make_manifest([d])
@@ -402,7 +402,7 @@ def _():
             pass
 
 
-@test("no allowed_paths skips path check")
+@check("no allowed_paths skips path check")
 def _():
     m = ToolManifest(
         name="compute",
@@ -498,7 +498,7 @@ def _setup(d, max_steps=5, resps=None):
     return s, k
 
 
-@test("happy path: single step -> DONE")
+@check("happy path: single step -> DONE")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s, k = _setup(d, resps=[_fa("42")])
@@ -508,7 +508,7 @@ def _():
         s.close()
 
 
-@test("session persisted in DB after run")
+@check("session persisted in DB after run")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s, k = _setup(d, resps=[_fa()])
@@ -517,7 +517,7 @@ def _():
         s.close()
 
 
-@test("session_start + session_end events written")
+@check("session_start + session_end events written")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s, k = _setup(d, resps=[_fa()])
@@ -527,7 +527,7 @@ def _():
         s.close()
 
 
-@test("step limit exceeded -> FAILED with StepLimitExceededError")
+@check("step limit exceeded -> FAILED with StepLimitExceededError")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s, k = _setup(d, max_steps=2, resps=[_tc("read_file", {"path": "/x"})] * 10)
@@ -536,7 +536,7 @@ def _():
         s.close()
 
 
-@test("provider exhausted -> FAILED")
+@check("provider exhausted -> FAILED")
 def _():
     with tempfile.TemporaryDirectory() as d:
         cfg = KernelConfig(
@@ -567,7 +567,7 @@ def _():
             s.close()
 
 
-@test("unknown tool -> FAILED with UnknownToolError")
+@check("unknown tool -> FAILED with UnknownToolError")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s, k = _setup(d, resps=[_tc("no_such_tool", {"val": "x"}), _fa()])
@@ -576,7 +576,7 @@ def _():
         s.close()
 
 
-@test("injection warning: session still completes")
+@check("injection warning: session still completes")
 def _():
     with tempfile.TemporaryDirectory() as d:
         s, k = _setup(d, resps=[_fa("OK")])
@@ -625,7 +625,7 @@ def _wm(allowed):
     )
 
 
-@test("read_file: reads existing file correctly")
+@check("read_file: reads existing file correctly")
 def _():
     with tempfile.TemporaryDirectory() as d:
         f = (_p := os.path.join(d, "f.txt"))
@@ -634,14 +634,14 @@ def _():
         assert r.ok and r.data["content"] == "hello"
 
 
-@test("read_file: missing file -> ok=False result, no exception")
+@check("read_file: missing file -> ok=False result, no exception")
 def _():
     with tempfile.TemporaryDirectory() as d:
         r = run_tool_sandboxed(_rm(d), {"path": f"{d}/nope.txt"}, inspect.getfile(ReadFileTool))
         assert not r.ok and "FileNotFoundError" in (r.error_message or "")
 
 
-@test("read_file: truncation works correctly")
+@check("read_file: truncation works correctly")
 def _():
     with tempfile.TemporaryDirectory() as d:
         f = os.path.join(d, "big.txt")
@@ -650,7 +650,7 @@ def _():
         assert r.ok and r.data["truncated"] and len(r.data["content"]) <= 100
 
 
-@test("read_file: /etc/passwd traversal blocked")
+@check("read_file: /etc/passwd traversal blocked")
 def _():
     with tempfile.TemporaryDirectory() as d:
         try:
@@ -660,7 +660,7 @@ def _():
             pass
 
 
-@test("write_file: creates new file")
+@check("write_file: creates new file")
 def _():
     with tempfile.TemporaryDirectory() as d:
         f = os.path.join(d, "out.txt")
@@ -670,7 +670,7 @@ def _():
         assert r.ok and open(f).read() == "written!"
 
 
-@test("write_file: append mode works")
+@check("write_file: append mode works")
 def _():
     with tempfile.TemporaryDirectory() as d:
         f = os.path.join(d, "a.txt")
@@ -683,7 +683,7 @@ def _():
         assert r.ok and open(f).read() == "line1\nline2\n"
 
 
-@test("sandbox: timeout kills slow tool")
+@check("sandbox: timeout kills slow tool")
 def _():
     with tempfile.TemporaryDirectory() as d:
         sp = os.path.join(d, "slow.py")
