@@ -1,5 +1,7 @@
 # ARIA — Agent Runtime for Intelligent Automation
 
+Built by [VisionQuantech](https://visionquantech.com) — AI agents, apps & tools for small businesses.
+
 **Local-first. Secure by default. Fully auditable.**
 
 > *Build smallest possible correct system. Fail loudly, never silently.*
@@ -274,4 +276,3 @@ The audit chain uses SHA-256 linking: each record's hash is computed from the pr
 
 ## Prerequisites
 - Required environment and dependencies
-
